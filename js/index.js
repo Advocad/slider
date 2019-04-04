@@ -13,31 +13,68 @@ let multiSlider = ( function () {
     let transform = 0;
     let step = itemWidth / wrapperWidth * 100;
     let items = [];
-    
+    let nexitem;
+    let indexItem = 0;
     //  items.map(function (item,index) {
     //    return ({item: item, position: index, transform: 0});
     //  })
     sliderItems.forEach(function (item, index) {
       items.push({ item: item, position: index, transform: 0 });
     });
-
+    console.log(items);
+    
     let position ={
-      getMin: 0,
-      getMax: items.length -1,
+      itemMin: function () {
+          items.forEach(function (item, index) {
+            if (item.position < items[indexItem].position) {
+              indexItem = index;
+                
+            }
+        });
+        return indexItem;
+      },
+      itemMax: function () {
+        items.forEach(function (item, index) {
+          if (item.position > items[indexItem].position) {
+            indexItem = index;
+              
+          }
+      });
+      return indexItem;
+      },
+      getMin: function () {
+        return items[position.itemMin()].position;
+      },
+      getMax: function () {
+        return items[position.itemMax()].position;
+      },
     }
     let transformItem = function (direction) {
       if(direction === 'right'){
-        if((positionLeftItem + wrapperWidth / itemWidth - 1) >= position.getMax){
-          return;
-        }
         positionLeftItem++;
+        if((positionLeftItem + wrapperWidth / itemWidth - 1) > position.getMax()){
+          nexitem = position.itemMin();
+          console.log(nexitem);
+          items[nexitem].position = position.getMin() + 1;
+          items[nexitem].transform += items.length * 100;
+          console.log(items[nexitem].transform );
+          items[nexitem].item.style.transform = 'translateX(' + items[nexitem].transform + '%)';
+         
+        }
+        
         transform -= step;
       }
       if(direction === 'left'){
-        if( positionLeftItem <= position.getMin){
-          return
-        }
         positionLeftItem--;
+        if( positionLeftItem < position.getMin()){
+          nexitem = position.itemMax();
+          console.log(nexitem);
+          items[nexitem].position = position.getMin() + 1;
+          items[nexitem].transform -= items.length * 100;
+          console.log(items[nexitem].transform );
+          items[nexitem].item.style.transform = 'translateX(' + items[nexitem].transform + '%)';
+        }
+        
         transform += step;
       }
       sliderWrapper.style.transform = 'translateX(' + transform + '%)';
