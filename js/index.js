@@ -55,7 +55,7 @@ let multiSlider = ( function () {
         if((positionLeftItem + wrapperWidth / itemWidth - 1) > position.getMax()){
           nexitem = position.itemMin();
           console.log(nexitem);
-          items[nexitem].position = position.getMin() + 1;
+          items[nexitem].position = position.getMax() + 1;
           items[nexitem].transform += items.length * 100;
           console.log(items[nexitem].transform );
           items[nexitem].item.style.transform = 'translateX(' + items[nexitem].transform + '%)';
@@ -69,7 +69,7 @@ let multiSlider = ( function () {
         if( positionLeftItem < position.getMin()){
           nexitem = position.itemMax();
           console.log(nexitem);
-          items[nexitem].position = position.getMin() + 1;
+          items[nexitem].position = position.getMin() - 1;
           items[nexitem].transform -= items.length * 100;
           console.log(items[nexitem].transform );
           items[nexitem].item.style.transform = 'translateX(' + items[nexitem].transform + '%)';
