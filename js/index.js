@@ -1,113 +1,104 @@
-'use strict';
-let multiSlider = ( function () {
-  return function (selector) {
-    const mainElement = document.querySelector(selector); // основный элемент блока   
-    const sliderWrapper = mainElement.querySelector('.slider__wrapper');
-    const sliderItems = mainElement.querySelectorAll('.slider__item'); // элементы
-    const sliderControls = mainElement.querySelectorAll('.slider__control'); // элементы управления
-    const sliderControlLeft = mainElement.querySelector('.slider__control-left');// кнопка "LEFT"
-    const sliderControlRight = mainElement.querySelector('.slider__control-right');// кнопка "RIGHT"
-    const wrapperWidth = parseFloat(getComputedStyle(sliderWrapper).width);// ширина обёртки
-    const itemWidth = parseFloat(getComputedStyle(sliderItems[0]).width); // ширина одного элемента
-    let positionLeftItem = 0;
-    let transform = 0;
-    let step = itemWidth / wrapperWidth * 100;
-    let items = [];
-    let nexitem;
-    let indexItem = 0;
-    //  items.map(function (item,index) {
-    //    return ({item: item, position: index, transform: 0});
-    //  })
-    sliderItems.forEach(function (item, index) {
-      items.push({ item: item, position: index, transform: 0 });
+const right = 'right';
+const left = 'left';
+
+class MultiSlider {
+  constructor(selector) {
+    this.selector = selector;
+    this.mainElement = document.querySelector(this.selector);  // основный элемент блока 
+    this.sliderWrapper = this.mainElement.querySelector('.slider__wrapper');
+    this.sliderItems = this.mainElement.querySelectorAll('.slider__item'); // элементы
+    this.sliderControls = this.mainElement.querySelectorAll('.slider__control'); // элементы управления
+    this.sliderControlLeft = this.mainElement.querySelector('.slider__control-left');// кнопка "LEFT"
+    this.sliderControlRight = this.mainElement.querySelector('.slider__control-right');// кнопка "RIGHT"
+    this.wrapperWidth = parseFloat(getComputedStyle(this.sliderWrapper).width);
+    this.itemWidth = parseFloat(getComputedStyle(this.sliderItems[0]).width); 
+  
+
+    this.positionLeftItem = 0;
+    this.transform = 0;
+    this.step = this.itemWidth / this.wrapperWidth * 100;
+    this.items = [];
+    this.indexItem = 0;
+  };
+
+  
+ 
+  init(){
+    console.log(this.items);
+    this.sliderItems.forEach((item, index) => {
+      this.items.push({ item, position: index, transform: 0 });
     });
-    console.log(items);
     
-    let position ={
-      itemMin: function () {
-          items.forEach(function (item, index) {
-            if (item.position < items[indexItem].position) {
-              indexItem = index;
-                
-            }
-        });
-        return indexItem;
-      },
-      itemMax: function () {
-        items.forEach(function (item, index) {
-          if (item.position > items[indexItem].position) {
-            indexItem = index;
-              
-          }
-      });
-      return indexItem;
-      },
-      getMin: function () {
-        return items[position.itemMin()].position;
-      },
-      getMax: function () {
-        return items[position.itemMax()].position;
-      },
-    }
-    let transformItem = function (direction) {
-      if(direction === 'right'){
-        positionLeftItem++;
-        if((positionLeftItem + wrapperWidth / itemWidth - 1) > position.getMax()){
-          nexitem = position.itemMin();
-          console.log(nexitem);
-          items[nexitem].position = position.getMax() + 1;
-          items[nexitem].transform += items.length * 100;
-          console.log(items[nexitem].transform );
-          items[nexitem].item.style.transform = 'translateX(' + items[nexitem].transform + '%)';
-         
-        }
-        
-        transform -= step;
+    
+    
+    this.setUpListeners();
+  };
+
+
+  get itemMin() {
+    this.items.forEach((item, index) => {
+      if (item.position < this.items[this.indexItem].position) {
+        this.indexItem = index;
+          
       }
-      if(direction === 'left'){
-        positionLeftItem--;
-        if( positionLeftItem < position.getMin()){
-          nexitem = position.itemMax();
-          console.log(nexitem);
-          items[nexitem].position = position.getMin() - 1;
-          items[nexitem].transform -= items.length * 100;
-          console.log(items[nexitem].transform );
-          items[nexitem].item.style.transform = 'translateX(' + items[nexitem].transform + '%)';
-        }
-        
-        transform += step;
+  });
+  return this.indexItem;
+  };
+  get itemMax() {
+    this.items.forEach((item, index) => {
+      if (item.position > this.items[this.indexItem].position) {
+        this.indexItem = index;
+          
       }
-      sliderWrapper.style.transform = 'translateX(' + transform + '%)';
-    }
-    // обработчик события click для кнопок "назад" и "вперед"
-    let controlClick = function (e) {
-      const direction = this.classList.contains('slider__control-right') ? 'right' : 'left';
-      e.preventDefault();
-      transformItem(direction);
-    };
-
-    let setUpListeners = function () {
-      // добавление к кнопкам "назад" и "вперед" обрботчика controlClick для событя click
-      sliderControls.forEach(function (item) {
-        item.addEventListener('click', controlClick);
-      });
-    }
-
-    // инициализация
-    setUpListeners();
-
-    return {
-      right: function () { // метод right
-        transformItem('right');
-      },
-      left: function () { // метод left
-        transformItem('left');
+    });
+    return this.indexItem;
+  };
+  get getMin() {
+    return this.items[this.itemMin].position;
+  };
+  get getMax() {
+    
+    return this.items[this.itemMax].position;
+  };
+  transformItem = (direction) =>{
+    if(direction === right){
+      this.positionLeftItem++;
+      if((this.positionLeftItem + this.wrapperWidth / this.itemWidth - 1) > this.getMax){
+        const nexitem = this.itemMin;
+        this.items[nexitem].position = this.getMax + 1;
+        this.items[nexitem].transform += this.items.length * 100;
+        this.items[nexitem].item.style.transform = `translateX( ${this.items[nexitem].transform}%)`;
+       
       }
+      
+      this.transform -= this.step;
     }
-  }
-}());
+    if(direction === left){
+      this.positionLeftItem--;
+      if( this.positionLeftItem < this.getMin ){
+        const nexitem = this.itemMax;
+        this.items[nexitem].position = this.getMin - 1;
+        this.items[nexitem].transform -= this.items.length * 100;
+        this.items[nexitem].item.style.transform = `translateX( ${this.items[nexitem].transform}%)`;
+      }
+      
+      this.transform += this.step;
+    }
+    this.sliderWrapper.style.transform = `translateX(${this.transform}%)`;
+  };
 
 
-let slider = multiSlider('.slider');
+  controlClick = (event) => {
+    const direction = event.target.classList.contains('slider__control-right') ? 'right' : 'left';
+    event.preventDefault();
+    this.transformItem(direction);
+  };
+
+  setUpListeners = () =>{
+    this.sliderControls.forEach(item => {
+      item.addEventListener('click', this.controlClick);
+    });
+  };
+}
 
 
