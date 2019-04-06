@@ -1,10 +1,10 @@
 const right = 'right';
 const left = 'left';
+const interval = 0;
 
 class MultiSlider {
-  constructor(selector) {
-    this.selector = selector;
-    this.mainElement = document.querySelector(this.selector);  // основный элемент блока 
+  constructor(selector, isCycle) {
+    this.mainElement = document.querySelector(selector);  // основный элемент блока 
     this.sliderWrapper = this.mainElement.querySelector('.slider__wrapper');
     this.sliderItems = this.mainElement.querySelectorAll('.slider__item'); // элементы
     this.sliderControls = this.mainElement.querySelectorAll('.slider__control'); // элементы управления
@@ -19,6 +19,7 @@ class MultiSlider {
     this.step = this.itemWidth / this.wrapperWidth * 100;
     this.items = [];
     this.indexItem = 0;
+    this.isCycle =  isCycle == true ? true : false;
   };
 
   
@@ -29,9 +30,9 @@ class MultiSlider {
       this.items.push({ item, position: index, transform: 0 });
     });
     
-    
-    
     this.setUpListeners();
+
+    this.cycle(right);
   };
 
 
@@ -87,11 +88,18 @@ class MultiSlider {
     this.sliderWrapper.style.transform = `translateX(${this.transform}%)`;
   };
 
-
+  cycle = (direction) =>{
+    if(!this.isCycle) return;
+    interval = setInterval(() => {
+      this.transformItem(direction);
+    }, 2000);
+  };
   controlClick = (event) => {
-    const direction = event.target.classList.contains('slider__control-right') ? 'right' : 'left';
+    const direction = event.target.classList.contains('slider__control-right') ? right : left;
     event.preventDefault();
     this.transformItem(direction);
+    clearInterval(interval);
+    this.cycle(right);
   };
 
   setUpListeners = () =>{
