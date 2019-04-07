@@ -29,7 +29,11 @@
   </div>
   <script src="js/index.js"></script>
   <script>
-    const slider = new MultiSlider(".slider", true);
+    const slider = new MultiSlider(".slider", {
+      isCycle: true, 
+      positionSlide: right,
+      interval: 5000
+    });
     slider.init();
   </script>
 </body>
