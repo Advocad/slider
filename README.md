@@ -11,9 +11,18 @@ js - сам скрипт слайдера
 ```
  <div class="slider">
     <div class="slider__wrapper">
-      <img src="" alt="">
-      <img src="" alt="">
-      <img src="" alt="">
+      <div class="slider__item">
+        <img src="" alt="">
+      </div>
+      <div class="slider__item">
+        <img src="" alt="">
+      </div>
+      <div class="slider__item">
+        <img src="" alt="">
+      </div>
+      <div class="slider__item">
+        <img src="" alt="">
+      </div>
     </div>
     <a class="slider__control slider__control-left" href="#"></a>
     <a class="slider__control slider__control-right" href="#"></a>
